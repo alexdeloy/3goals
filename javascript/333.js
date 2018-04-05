@@ -44,7 +44,41 @@ var getDatesForHeaders = function() {
 };
 
 var saveData = function() {
-//    localStorage.setItem("day-1", foo);
+    var dayItems = document.querySelectorAll("section.day .goal .content");
+    for (var i=0; i < dayItems.length; i++) {
+        localStorage.setItem("day-"+i, dayItems[i].innerHTML);
+    }
+    var weekItems = document.querySelectorAll("section.week .goal .content");
+    for (var i=0; i < weekItems.length; i++) {
+        localStorage.setItem("week-"+i, weekItems[i].innerHTML);
+    }
+    var monthItems = document.querySelectorAll("section.month .goal .content");
+    for (var i=0; i < monthItems.length; i++) {
+        localStorage.setItem("month-"+i, monthItems[i].innerHTML);
+    }
+}
+
+var loadData = function() {
+    var dayItems = document.querySelectorAll("section.day .goal .content");
+    for (var i=0; i < dayItems.length; i++) {
+        var content = localStorage.getItem("day-"+i) || "";
+        content = content.trim();
+        // skip empty content, br tags or whitespace
+        if (content == "" || content == "<br>" || content.length < 2) {
+            dayItems[i].parentNode.classList.add("empty");
+        } else {
+            dayItems[i].parentNode.classList.remove("empty");
+            dayItems[i].innerHTML = content;
+        }
+    }
+    var weekItems = document.querySelectorAll("section.week .goal .content");
+    for (var i=0; i < weekItems.length; i++) {
+        weekItems[i].innerHTML = localStorage.getItem("week-"+i) || "";
+    }
+    var monthItems = document.querySelectorAll("section.month .goal .content");
+    for (var i=0; i < monthItems.length; i++) {
+        monthItems[i].innerHTML = localStorage.getItem("month-"+i) || "";
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -110,4 +144,5 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     getDatesForHeaders();
+    loadData();
 });
