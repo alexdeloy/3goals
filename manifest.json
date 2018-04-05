@@ -1,0 +1,12 @@
+{
+  "short_name": "3GOALS",
+  "name": "Three goals per Day, Week and Month",
+  "icons": [
+    {
+      "src": "images/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "index.html?goals=day"
+}
