@@ -2,7 +2,6 @@ var currentSection = 0;
 var sections;
 
 var toggleSection = function() {
-    console.log("toggleSection:" + currentSection);
     currentSection++;
     currentSection = currentSection % sections.length;
 
@@ -21,8 +20,18 @@ var pad = function(number) {
     } else {
         return "0" + number;
     }
-}
+};
 
+var cleanup = function(str) {
+    // replace br tags at start and end of the string
+    str = str.replace(/^<br(.*?)>/g, "");
+    str = str.replace(/(<br(.?)>)*$/g, "");
+
+    // trim whitespace
+    str = str.trim();
+
+    return str;
+};
 
 var getDatesForHeaders = function() {
     var d = new Date();
@@ -46,17 +55,31 @@ var getDatesForHeaders = function() {
 var saveData = function() {
     var dayItems = document.querySelectorAll("section.day .goal .content");
     for (var i=0; i < dayItems.length; i++) {
-        localStorage.setItem("day-"+i, dayItems[i].innerHTML);
+        localStorage.setItem("day-"+i, cleanup(dayItems[i].innerHTML));
     }
     var weekItems = document.querySelectorAll("section.week .goal .content");
     for (var i=0; i < weekItems.length; i++) {
-        localStorage.setItem("week-"+i, weekItems[i].innerHTML);
+        localStorage.setItem("week-"+i, cleanup(weekItems[i].innerHTML));
     }
     var monthItems = document.querySelectorAll("section.month .goal .content");
     for (var i=0; i < monthItems.length; i++) {
-        localStorage.setItem("month-"+i, monthItems[i].innerHTML);
+        localStorage.setItem("month-"+i, cleanup(monthItems[i].innerHTML));
     }
-}
+
+    // remove the editing state from all goals and cleanup
+    var goals = document.querySelectorAll(".goal");
+    for (var i=0; i < goals.length; i++) {
+        goals[i].classList.remove("editing");
+        var content = goals[i].querySelector(".content");
+        content.contentEditable = false;
+        content.innerHTML = cleanup(content.innerHTML);
+        if (content.innerHTML == "") {
+            goals[i].classList.add("empty");
+        } else {
+            goals[i].classList.remove("empty");
+        }
+    }
+};
 
 var loadData = function() {
     var dayItems = document.querySelectorAll("section.day .goal .content");
@@ -85,7 +108,7 @@ var loadData = function() {
             goals[i].parentNode.classList.remove("empty");
         }
     }
-}
+};
 
 document.addEventListener("DOMContentLoaded", function(event) {
     sections = document.querySelectorAll("section");
@@ -115,6 +138,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
             e.target.parentNode.classList.add("editing");
             e.target.contentEditable = true;
 
+            // if needed set a empty space to give the caret something to focus on
+            if (e.target.innerHTML == "") {
+                e.target.innerHTML = "&hairsp;";
+            }
+
             // set caret to the end
             var range = document.createRange();
             var sel = window.getSelection();
@@ -135,8 +163,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         options.addEventListener("click", function(e) {
             if (e.target.parentNode.classList.contains("editing")) {
-                e.target.parentNode.classList.remove("editing");
-                e.target.parentNode.querySelector(".content").contentEditable = false;
                 saveData();
             } else {
                 for (var j=0; j < goals.length; j++) {
