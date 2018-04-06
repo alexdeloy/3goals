@@ -9,6 +9,7 @@ var sections;
 var toggleSection = function() {
     currentSection++;
     currentSection = currentSection % sections.length;
+    saveData();
 
     for (var i=0; i < sections.length; i++) {
         if (i == currentSection) {
@@ -61,14 +62,17 @@ var saveData = function() {
     var dayItems = document.querySelectorAll("section.day .goal .content");
     for (var i=0; i < dayItems.length; i++) {
         localStorage.setItem("day-"+i, cleanup(dayItems[i].innerHTML));
+        localStorage.setItem("day-"+i+"-done", dayItems[i].parentNode.classList.contains("done"));
     }
     var weekItems = document.querySelectorAll("section.week .goal .content");
     for (var i=0; i < weekItems.length; i++) {
         localStorage.setItem("week-"+i, cleanup(weekItems[i].innerHTML));
+        localStorage.setItem("week-"+i+"-done", weekItems[i].parentNode.classList.contains("done"));
     }
     var monthItems = document.querySelectorAll("section.month .goal .content");
     for (var i=0; i < monthItems.length; i++) {
         localStorage.setItem("month-"+i, cleanup(monthItems[i].innerHTML));
+        localStorage.setItem("month-"+i+"-done", monthItems[i].parentNode.classList.contains("done"));
     }
 
     // remove the editing state from all goals and cleanup
@@ -94,20 +98,41 @@ var loadData = function() {
         if (dayContent != "") {
             dayItems[i].innerHTML = dayContent;
         }
+        var done = (localStorage.getItem("day-"+i+"-done") == "true");
+        if (done) {
+            dayItems[i].parentNode.classList.add("done");
+        } else {
+            dayItems[i].parentNode.classList.remove("done");
+        }
     }
     var weekItems = document.querySelectorAll("section.week .goal .content");
     for (var i=0; i < weekItems.length; i++) {
         weekItems[i].innerHTML = localStorage.getItem("week-"+i) || "";
+        var done = (localStorage.getItem("week-"+i+"-done") == "true");
+        if (done) {
+            weekItems[i].parentNode.classList.add("done");
+        } else {
+            weekItems[i].parentNode.classList.remove("done");
+        }
     }
     var monthItems = document.querySelectorAll("section.month .goal .content");
     for (var i=0; i < monthItems.length; i++) {
         monthItems[i].innerHTML = localStorage.getItem("month-"+i) || "";
+        var done = (localStorage.getItem("month-"+i+"-done") == "true");
+        if (done) {
+            monthItems[i].parentNode.classList.add("done");
+        } else {
+            monthItems[i].parentNode.classList.remove("done");
+        }
     }
 
     // set empty flag on empty goals
     var goals = document.querySelectorAll(".goal .content");
     for (var i=0; i < goals.length; i++) {
         if (goals[i].innerHTML == "") {
+            if (goals[i].parentNode.classList.contains("done")) {
+                goals[i].parentNode.classList.remove("done");
+            }
             goals[i].parentNode.classList.add("empty");
         } else {
             goals[i].parentNode.classList.remove("empty");
@@ -145,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
             // if needed set a empty space to give the caret something to focus on
             if (e.target.innerHTML == "") {
-                e.target.innerHTML = "&hairsp;";
+                e.target.innerHTML = " ";
             }
 
             // set caret to the end
@@ -167,16 +192,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
         });
 
         options.addEventListener("click", function(e) {
-            if (e.target.parentNode.classList.contains("editing")) {
-                saveData();
-            } else {
+            if (!e.target.parentNode.classList.contains("editing")) {
                 for (var j=0; j < goals.length; j++) {
                     goals[j].classList.remove("editing");
                     goals[j].querySelector(".content").contentEditable = false;
                 }
-
                 e.target.parentNode.classList.toggle("done");
             }
+            saveData();
         });
     }
 
