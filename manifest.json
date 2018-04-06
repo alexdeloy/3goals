@@ -1,7 +1,15 @@
 {
-  "short_name": "3GOALS",
+  "lang": "en",
+  "background_color": "#282c34",
   "name": "Three goals per Day, Week and Month",
+  "short_name": "3GOALS",
+  "display": "standalone",
   "icons": [
+    {
+      "src": "images/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
     {
       "src": "images/icon-512.png",
       "type": "image/png",
