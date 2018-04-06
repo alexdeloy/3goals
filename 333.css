@@ -1,13 +1,6 @@
 @font-face {
     font-family: "Josefin Sans";
     font-style: normal;
-    font-weight: 400;
-    src: local("Josefin Sans Regular"), local("JosefinSans-Regular"), url("fonts/josefin-sans-v12-latin-regular.woff2") format("woff2"), url("fonts/josefin-sans-v12-latin-regular.woff") format("woff");
-}
-
-@font-face {
-    font-family: "Josefin Sans";
-    font-style: normal;
     font-weight: 700;
     src: local("Josefin Sans Bold"), local("JosefinSans-Bold"), url("fonts/josefin-sans-v12-latin-700.woff2") format("woff2"), url("fonts/josefin-sans-v12-latin-700.woff") format("woff");
 }
@@ -17,20 +10,6 @@
     font-style: normal;
     font-weight: 400;
     src: local("Open Sans Regular"), local("OpenSans-Regular"), url("fonts/open-sans-v15-latin-regular.woff2") format("woff2"), url("fonts/open-sans-v15-latin-regular.woff") format("woff");
-}
-
-@font-face {
-    font-family: "Open Sans";
-    font-style: normal;
-    font-weight: 600;
-    src: local("Open Sans SemiBold"), local("OpenSans-SemiBold"), url("fonts/open-sans-v15-latin-600.woff2") format("woff2"), url("fonts/open-sans-v15-latin-600.woff") format("woff");
-}
-
-@font-face {
-    font-family: "Open Sans";
-    font-style: normal;
-    font-weight: 700;
-    src: local("Open Sans Bold"), local("OpenSans-Bold"), url("fonts/open-sans-v15-latin-700.woff2") format("woff2"), url("fonts/open-sans-v15-latin-700.woff") format("woff");
 }
 
 * {
@@ -44,20 +23,21 @@ html {
 }
 
 body {
-    margin: 0;
-    padding: 0;
     font-family: sans-serif;
+    margin: 0;
     overflow: hidden;
+    padding: 0;
 }
 
 section {
-    width: 100vw;
     height: 100vh;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
     position: absolute;
     top: 0;
-    opacity: 0;
-    pointer-events: none;
     transition: opacity 0.1s ease-in-out;
+    width: 100vw;
 }
 
 section.visible {
@@ -78,14 +58,15 @@ section.visible {
 }
 
 .header {
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
     font-family: "Josefin Sans", sans-serif;
     height: 25vh;
+    overflow: hidden;
     padding: 1rem 0;
     text-align: center;
     text-transform: uppercase;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -98,7 +79,8 @@ h1 {
 
 h2 {
     color: #fff;
-    font-size: 1.5rem;
+    font-family: "Open Sans", sans-serif;
+    font-size: 1rem;
     font-weight: 400;
     margin: 0.5rem 0;
     padding: 0;
@@ -109,8 +91,8 @@ h2 {
     color: #fff;
     font-family: "Open Sans", sans-serif;
     font-size: 1.25rem;
-    line-height: 1.5;
     height: 25vh;
+    line-height: 1.5;
     margin: 0;
     opacity: 1;
     padding: 0;
