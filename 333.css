@@ -108,7 +108,8 @@ h2 {
     background: linear-gradient(150deg, rgba(0,0,0,0), rgba(0,0,0,0.1));
     color: #fff;
     font-family: "Open Sans", sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    line-height: 1.5;
     height: 25vh;
     margin: 0;
     opacity: 1;
