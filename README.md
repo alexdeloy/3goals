@@ -11,3 +11,5 @@ Made with VanillaJS because there is enough npm bullshit out there.
 - Tap the double-checkmark to finish a goal (and to toggle back if needed)
 - Tap the header to change between day/week/month
 - Get things done
+
+![Screenshot](screenshot-today.png)
