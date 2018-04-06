@@ -1,3 +1,8 @@
+if ("serviceWorker" in navigator) {
+    // register empty service worker to show the install prompt
+    navigator.serviceWorker.register("service-worker.js");
+}
+
 var currentSection = 0;
 var sections;
 
