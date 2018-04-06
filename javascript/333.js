@@ -61,14 +61,10 @@ var saveData = function() {
 var loadData = function() {
     var dayItems = document.querySelectorAll("section.day .goal .content");
     for (var i=0; i < dayItems.length; i++) {
-        var content = localStorage.getItem("day-"+i) || "";
-        content = content.trim();
-        // skip empty content, br tags or whitespace
-        if (content == "" || content == "<br>" || content.length < 2) {
-            dayItems[i].parentNode.classList.add("empty");
-        } else {
-            dayItems[i].parentNode.classList.remove("empty");
-            dayItems[i].innerHTML = content;
+        var dayContent = localStorage.getItem("day-"+i) || "";
+        // skip empty content to keep the onboarding texts
+        if (dayContent != "") {
+            dayItems[i].innerHTML = dayContent;
         }
     }
     var weekItems = document.querySelectorAll("section.week .goal .content");
@@ -78,6 +74,16 @@ var loadData = function() {
     var monthItems = document.querySelectorAll("section.month .goal .content");
     for (var i=0; i < monthItems.length; i++) {
         monthItems[i].innerHTML = localStorage.getItem("month-"+i) || "";
+    }
+
+    // set empty flag on empty goals
+    var goals = document.querySelectorAll(".goal .content");
+    for (var i=0; i < goals.length; i++) {
+        if (goals[i].innerHTML == "") {
+            goals[i].parentNode.classList.add("empty");
+        } else {
+            goals[i].parentNode.classList.remove("empty");
+        }
     }
 }
 
