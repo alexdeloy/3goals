@@ -1,25 +1,12 @@
+// --- Service Workers ----------------------------------------------------------------------------
+// register empty service worker to show the install prompt
 if ("serviceWorker" in navigator) {
-    // register empty service worker to show the install prompt
     navigator.serviceWorker.register("service-worker.js");
 }
 
-var currentSection = 0;
-var sections;
 
-var toggleSection = function() {
-    currentSection++;
-    currentSection = currentSection % sections.length;
-    saveData();
-
-    for (var i=0; i < sections.length; i++) {
-        if (i == currentSection) {
-            sections[i].classList.add("visible");
-        } else {
-            sections[i].classList.remove("visible");
-        }
-    }
-};
-
+// --- Helpers ------------------------------------------------------------------------------------
+// Helper function to pad numbers to 2 digits
 var pad = function(number) {
     if (number > 9) {
         return number;
@@ -28,36 +15,57 @@ var pad = function(number) {
     }
 };
 
+// trim whitespace and br tags on a string
 var cleanup = function(str) {
-    // replace br tags at start and end of the string
     str = str.replace(/^<br(.*?)>/g, "");
     str = str.replace(/(<br(.?)>)*$/g, "");
 
-    // trim whitespace
     str = str.trim();
-
     return str;
 };
 
-var getDatesForHeaders = function() {
-    var d = new Date();
 
-    var headerToday = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
-    document.querySelector("section.day h2").innerHTML = headerToday;
+// --- Swipe Input --------------------------------------------------------------------------------
+document.addEventListener("touchstart", handleTouchStart, false);
+document.addEventListener("touchmove", handleTouchMove, false);
 
-    var weekDay = d.getDay() ;
-    dFrom = new Date(d.getTime() - ((weekDay-1) * 24 * 60 * 60 * 1000));
-    dTo = new Date(d.getTime() + ((7 - weekDay) * 24 * 60 * 60 * 1000));
-    var weekFrom = dFrom.getFullYear() + "-" + pad(dFrom.getMonth()+1) + "-" + pad(dFrom.getDate());
-    var weekTo = dTo.getFullYear() + "-" + pad(dTo.getMonth()+1) + "-" + pad(dTo.getDate());
-    var headerWeek = weekFrom + " - " + weekTo;
-    document.querySelector("section.week h2").innerHTML = headerWeek;
+var xDown = null;
+var yDown = null;
 
-    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    var headerMonth = months[d.getMonth()] + " " + d.getFullYear();
-    document.querySelector("section.month h2").innerHTML = headerMonth;
+var handleTouchStart = function(e) {
+    xDown = e.touches[0].clientX;
+    yDown = e.touches[0].clientY;
 };
 
+var handleTouchMove = function(e) {
+    if (!xDown || !yDown) {
+        return;
+    }
+
+    var editingContent = document.querySelector(".editing");
+    if (editingContent != null) {
+        return;
+    }
+
+    var xUp = e.touches[0].clientX;
+    var yUp = e.touches[0].clientY;
+
+    var xDiff = xDown - xUp;
+    var yDiff = yDown - yUp;
+
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+        if (xDiff > 0) {
+            toggleSection(1);
+        } else {
+            toggleSection(-1);
+        }
+    }
+    xDown = null;
+    yDown = null;
+};
+
+
+// --- Data Handling ------------------------------------------------------------------------------
 var saveData = function() {
     var dayItems = document.querySelectorAll("section.day .goal .content");
     for (var i=0; i < dayItems.length; i++) {
@@ -140,6 +148,54 @@ var loadData = function() {
     }
 };
 
+
+// --- Sections -----------------------------------------------------------------------------------
+var currentSection = 0;
+var sections;
+
+// toggle between sections, 1 = forward, -1 = backwards
+var toggleSection = function(direction) {
+    currentSection += direction;
+    if (currentSection < 0) {
+        currentSection = sections.length - 1;
+    }
+    if (currentSection >= sections.length) {
+        currentSection = 0;
+    }
+
+    saveData();
+
+    for (var i=0; i < sections.length; i++) {
+        if (i == currentSection) {
+            sections[i].classList.add("visible");
+        } else {
+            sections[i].classList.remove("visible");
+        }
+    }
+};
+
+
+var getDatesForHeaders = function() {
+    var d = new Date();
+
+    var headerToday = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+    document.querySelector("section.day h2").innerHTML = headerToday;
+
+    var weekDay = d.getDay() ;
+    dFrom = new Date(d.getTime() - ((weekDay-1) * 24 * 60 * 60 * 1000));
+    dTo = new Date(d.getTime() + ((7 - weekDay) * 24 * 60 * 60 * 1000));
+    var weekFrom = dFrom.getFullYear() + "-" + pad(dFrom.getMonth()+1) + "-" + pad(dFrom.getDate());
+    var weekTo = dTo.getFullYear() + "-" + pad(dTo.getMonth()+1) + "-" + pad(dTo.getDate());
+    var headerWeek = weekFrom + " - " + weekTo;
+    document.querySelector("section.week h2").innerHTML = headerWeek;
+
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var headerMonth = months[d.getMonth()] + " " + d.getFullYear();
+    document.querySelector("section.month h2").innerHTML = headerMonth;
+};
+
+
+// --- Document ready -----------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function(event) {
     sections = document.querySelectorAll("section");
     sections[0].classList.add("visible");
@@ -147,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     var sectionHeaders = document.querySelectorAll(".header");
     for (var i=0; i < sectionHeaders.length; i++) {
         sectionHeaders[i].addEventListener("click", function(e) {
-            toggleSection();
+            toggleSection(1);
         });
     }
 
